@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/AnubhavKiroula/go-auth-service/config"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
@@ -16,6 +17,10 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
+	// Connect to PostgreSQL and run schema migration
+	config.InitDB()
+	defer config.DB.Close()
 
 	port := os.Getenv("PORT")
 	if port == "" {
