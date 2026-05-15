@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/AnubhavKiroula/go-auth-service/config"
+	"github.com/AnubhavKiroula/go-auth-service/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
@@ -42,7 +43,10 @@ func main() {
 		fmt.Fprintln(w, `{"status":"ok","message":"go-auth-service is running"}`)
 	})
 
-	// TODO (feature/auth): Register POST /signup and POST /login
+	// Public authentication routes
+	r.Post("/signup", handlers.Signup)
+	r.Post("/login", handlers.Login)
+
 	// TODO (feature/protected-routes): Register GET /profile and GET /users under JWT middleware
 
 	log.Printf("Server starting on port %s", port)
