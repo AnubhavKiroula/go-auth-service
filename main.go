@@ -8,6 +8,7 @@ import (
 
 	"github.com/AnubhavKiroula/go-auth-service/config"
 	"github.com/AnubhavKiroula/go-auth-service/handlers"
+	authMW "github.com/AnubhavKiroula/go-auth-service/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
@@ -47,7 +48,16 @@ func main() {
 	r.Post("/signup", handlers.Signup)
 	r.Post("/login", handlers.Login)
 
-	// TODO (feature/protected-routes): Register GET /profile and GET /users under JWT middleware
+	// Protected routes — require a valid JWT
+	r.Group(func(r chi.Router) {
+		r.Use(authMW.Authenticate)
+
+		// GET /profile — any authenticated role
+		r.Get("/profile", handlers.GetProfile)
+
+		// GET /users — admin only
+		r.With(authMW.RequireRole("admin")).Get("/users", handlers.ListUsers)
+	})
 
 	log.Printf("Server starting on port %s", port)
 	if err := http.ListenAndServe(":"+port, r); err != nil {
